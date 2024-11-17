@@ -1,6 +1,7 @@
 .globl dot
 
 .text
+
 # =======================================================
 # FUNCTION: Strided Dot Product Calculator
 #
@@ -12,7 +13,6 @@
 #   a1 (int *): Pointer to second input array
 #   a2 (int):   Number of elements to process
 #   a3 (int):   Skip distance in first array
-#   a4 (int):   Skip distance in second array
 #
 # Returns:
 #   a0 (int):   Resulting dot product value
@@ -37,6 +37,22 @@ dot:
 loop_start:
     bge t1, a2, loop_end
     # TODO: Add your own implementation
+    mul t2, t1, a3
+    slli t2, t2, 2
+    add t4, a0, t2
+    lw t4,0(t4)
+    
+    mul t3,t1 a4
+    slli t3, t3, 2
+    add t5, a1, t3
+    lw t5,0(t5)
+    
+    mul t5, t5, t4
+    add t0, t0, t5
+    
+    addi t1, t1, 1 
+    j loop_start
+
 
 loop_end:
     mv a0, t0
