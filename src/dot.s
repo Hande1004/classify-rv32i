@@ -1,6 +1,7 @@
 .globl dot
 
 .text
+
 # =======================================================
 # FUNCTION: Strided Dot Product Calculator
 #
@@ -12,7 +13,6 @@
 #   a1 (int *): Pointer to second input array
 #   a2 (int):   Number of elements to process
 #   a3 (int):   Skip distance in first array
-#   a4 (int):   Skip distance in second array
 #
 # Returns:
 #   a0 (int):   Resulting dot product value
@@ -37,6 +37,59 @@ dot:
 loop_start:
     bge t1, a2, loop_end
     # TODO: Add your own implementation
+    mv a5, t1
+    mv a6, a3
+    li t2, 0            	 
+    beqz a5, mult_done1
+    beqz a6, mult_done1
+mult_loop1:
+    andi t3, a5, 1		 
+    beq t3, zero, skip_add1
+    add t2 , t2, a6 
+skip_add1:    
+    srli a5, a5, 1
+    slli a6, a6, 1
+    bnez a5, mult_loop1
+mult_done1:
+    slli t2, t2, 2
+    add t4, a0, t2
+    lw t4,0(t4)
+    
+    mv a5, t1
+    mv a7, a4
+    li t3, 0            	 
+    beqz a5, mult_done2
+    beqz a7, mult_done2
+mult_loop2:
+    andi t2, a5, 1		 
+    beq t2, zero, skip_add2
+    add t3 , t3, a7 
+skip_add2:    
+    srli a5, a5, 1
+    slli a7, a7, 1
+    bnez a5, mult_loop2
+mult_done2:
+    slli t3, t3, 2
+    add t5, a1, t3
+    lw t5,0(t5)
+    
+    li t6, 0            	 
+    beqz t4, mult_done3
+    beqz t5, mult_done3
+mult_loop3:
+    andi t2, t4, 1		 
+    beq t2, zero, skip_add3
+    add t6 , t6, t5 
+skip_add3:    
+    srli t4, t4, 1
+    slli t5, t5, 1
+    bnez t4, mult_loop3
+mult_done3:
+    add t0, t0, t6
+    
+    addi t1, t1, 1 
+    j loop_start
+
 
 loop_end:
     mv a0, t0
