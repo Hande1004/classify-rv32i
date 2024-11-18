@@ -29,7 +29,23 @@ relu:
 
 loop_start:
     # TODO: Add your own implementation
+    blt t1, a1, loop_body   
+    jr ra                   
+
+loop_body:
+    slli t2, t1, 2          
+    add t3, a0, t2          
+    lw t4, 0(t3)            
+    blt t4, zero, set_zero  
+    j next_element          
+
+set_zero:
+    sw zero, 0(t3)          
+
+next_element:
+    addi t1, t1, 1          
+    j loop_start            
 
 error:
     li a0, 36          
-    j exit          
+    j exit

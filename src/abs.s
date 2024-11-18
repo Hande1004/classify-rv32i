@@ -22,6 +22,9 @@ abs:
     bge t0, zero, done
 
     # TODO: Add your own implementation
+    not t0, t0
+    addi t0, t0, 1
+    sw t0, 0(a0)
 
 done:
     # Epilogue

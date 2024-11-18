@@ -64,6 +64,37 @@ write_matrix:
     # mul s4, s2, s3   # s4 = total elements
     # FIXME: Replace 'mul' with your own implementation
 
+
+    # Save signs of s2 and s3
+    srai t1, s2, 31    # t1 = s2 >> 31 (sign bit of s2)
+    srai t2, s3, 31    # t2 = s3 >> 31 (sign bit of s3)
+
+    # Get absolute values of s2 and s3
+    xor t3, s2, t1     # t3 = s2 ^ t1
+    sub t3, t3, t1     # t3 = t3 - t1 (t3 = abs(s2))
+    xor t4, s3, t2     # t4 = s3 ^ t2
+    sub t4, t4, t2     # t4 = t4 - t2 (t4 = abs(s3))
+
+    # Initialize result
+    li s4, 0           # s4 = 0
+
+mul_loop:
+    beq t4, zero, adjust_sign   # If t4 == 0, exit loop
+    andi t5, t4, 1              # t5 = t4 & 1
+    beq t5, zero, skip_add
+    add s4, s4, t3              # s4 = s4 + t3
+skip_add:
+    slli t3, t3, 1               # t3 = t3 << 1
+    srli t4, t4, 1               # t4 = t4 >> 1
+    j mul_loop
+
+adjust_sign:
+    xor t6, t1, t2              # t6 = t1 ^ t2 (if signs differ, t6 = 1)
+    beqz t6, mul_done           # If t6 == 0, signs are same, result is positive
+    sub s4, zero, s4            # Negate s4 to get negative result
+mul_done:
+    # End of multiplication
+
     # write matrix data to file
     mv a0, s0
     mv a1, s1        # matrix data pointer

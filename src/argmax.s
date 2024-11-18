@@ -29,9 +29,39 @@ argmax:
 
     li t1, 0
     li t2, 1
-loop_start:
-    # TODO: Add your own implementation
 
+    mv t5, a0        
+loop_start:
+    beq t2, a1, special_case
+    beq t1, a1, done
+    lw t3, 0(t5)     
+    addi t5, t5, 4   
+
+    
+    blt t3, t0, skip_update  
+    blt t0, t3, update_max  
+
+    
+    j skip_update
+
+update_max:
+    mv t0, t3        
+    mv t2, t1
+    
+
+skip_update:
+    
+    addi t1, t1, 1   
+    j loop_start     
+special_case:
+    mv t2, t1
+done:
+    
+    mv a0, t2        
+    jr ra            
+    
+    
+    
 handle_error:
     li a0, 36
     j exit
